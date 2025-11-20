@@ -7,7 +7,3 @@ class RetrofitNetworkClient(private val storage: Storage) : NetworkClient {
         return TracksSearchResponse(searchList).apply { resultCode = 200 }
     }
 }
-
-interface NetworkClient {
-    fun doRequest(dto: Any): BaseResponse
-}
