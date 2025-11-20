@@ -1,5 +1,4 @@
 package com.practicum.myapplication
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.Surface
@@ -30,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -38,14 +35,10 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
@@ -59,7 +52,6 @@ import androidx.compose.ui.unit.Dp
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.ui.res.stringResource
-import com.practicum.myapplication.R
 
 class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,39 +65,30 @@ class SettingsActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(top = 24.dp, start = 16.dp, end = 16.dp)
                     ) {
-                        // Первый контейнер
                         ContainerRow(
                             leftText = stringResource(id = R.string.dark_theme),
                             rightContent = {
                                 var isChecked by remember { mutableStateOf(false) }
-
                                 CustomSwitch(
                                     checked = isChecked,
                                     onCheckedChange = { isChecked = it }
                                 )
-
                             }
-                        )// Второй контейнер
+                        )
                         ContainerRow(
                             leftText = stringResource(id = R.string.share_app),
                             rightContent = {
                                 ShareAppRow()
                             }
                         )
-
-                        // Третий контейнер
                         SupportRow(supportEmail = "student@example.com")
-
-                        // Четвертый контейнер
                         UserAgreementRow()
                     }
                 }
             }
         }
     }
-}
-
-@Composable
+}@Composable
 fun SettingsHeader(onBackClick: () -> Unit) {
     Surface(
         color = Color.White,
@@ -162,16 +145,15 @@ fun ContainerRow(
             Text(
                 text = leftText,
                 style = TextStyle(
-                    fontWeight = FontWeight.Normal, // 400
-                    fontSize = 16.sp, // 16px
-                    lineHeight = 20.sp // 100% line height, обычно 1.25 * fontSize
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                    lineHeight = 20.sp
                 )
             )
             rightContent()
         }
     }
 }
-
 @Composable
 fun CustomSwitch(
     checked: Boolean,
@@ -181,15 +163,10 @@ fun CustomSwitch(
     trackHeight: Dp = 12.dp,
     thumbSize: Dp = 18.dp
 ) {
-    val trackColor = animateColorAsState(targetValue = if (checked){
-        Color(0xFF3772E7)
-    } else Color(0xFFE6E8EB))
+    val trackColor = animateColorAsState(targetValue = if (checked){ Color(0xFF3772E7) } else Color(0xFFE6E8EB))
     val thumbColor = animateColorAsState(targetValue = if (checked) Color(0xFF3772E7) else Color(0xFFAEAFB4))
-    val thumbOffset by animateDpAsState(
-        targetValue = if (checked) trackWidth - thumbSize else 0.dp
-    )
+    val thumbOffset by animateDpAsState(targetValue = if (checked) trackWidth - thumbSize else 0.dp)
     val trackOpacity by animateFloatAsState(targetValue = if (checked) 0.48f else 1f)
-
     Box(
         modifier = modifier
             .width(trackWidth)
@@ -197,7 +174,6 @@ fun CustomSwitch(
             .clickable { onCheckedChange(!checked) },
         contentAlignment = Alignment.CenterStart
     ) {
-        // Трек
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
@@ -209,22 +185,21 @@ fun CustomSwitch(
                 style = Fill,
             )
         }
-        // Ползунок
         Box(
             modifier = Modifier
-                .offset(x = thumbOffset).height(thumbSize)
+                .offset(x = thumbOffset)
+                .height(thumbSize)
                 .width(thumbSize)
                 .clip(CircleShape)
                 .background(thumbColor.value)
                 .border(
-                    width = 0.dp, // border transparent
+                    width = 0.dp,
                     color = Color.Transparent,
                     shape = CircleShape
                 )
         )
     }
 }
-
 @Composable
 fun ShareAppRow() {
     val context = LocalContext.current
@@ -246,7 +221,6 @@ fun ShareAppRow() {
             }
     )
 }
-
 @Composable
 fun SupportRow(
     supportEmail: String,
@@ -255,7 +229,6 @@ fun SupportRow(
     emailBody: String = stringResource(id = R.string.thanks_from_developers)
 ) {
     val context = LocalContext.current
-
     ContainerRow(
         leftText = leftText,
         rightContent = {
@@ -270,7 +243,6 @@ fun SupportRow(
                             putExtra(Intent.EXTRA_SUBJECT, emailSubject)
                             putExtra(Intent.EXTRA_TEXT, emailBody)
                         }
-                        // Проверка, есть ли почтовый клиент
                         if (intent.resolveActivity(context.packageManager) != null) {
                             context.startActivity(intent)
                         } else {
@@ -281,13 +253,10 @@ fun SupportRow(
         }
     )
 }
-
 @Composable
 fun UserAgreementRow() {
     val context = LocalContext.current
     val url = stringResource(id = R.string.offer_url)
-
-    // Оборачиваем в Box с clickable, чтобы весь блок был активен
     Box(
         modifier = Modifier
             .fillMaxWidth()
